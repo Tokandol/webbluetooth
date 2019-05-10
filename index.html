@@ -1,11 +1,33 @@
-<html lang=en>
-  <head>
-    <title>Thingy:52 Web Bluetooth</title>
-  </head>
-</html>
-
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Magic Blue</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 <body>
-    <h1>Hello, IoT Makers~~~~~</h1>
-    <button onclick="connect();">Connect!</button>
-    <script src="index.js"></script>
+  <h1 style="color:salmon">Hello, IoT Makers~~~~~</h1>
+ 
+  <button onclick="connect();">Connect!</button> 
+  <input type="color" id="color"
+    oninput="changeLEDColorConstant(this.value)"> </input> 
+  <p>
+      <button onclick="setLEDColorConstant(255, 0, 0)">Red</button>
+      <button onclick="setLEDColorConstant(0, 255, 0)">Green</button>
+      <button onclick="setLEDColorConstant(0, 0, 255)">Blue</button>    
+  </p>
+  <p>
+      <!-- <div class="slidecontainer">
+          <input type="range" min="1" max="100" value="50" class="slider" id="myIntensity">
+      </div> -->
+      <button onclick="setLEDColorBreathe(1)">Red</button>
+      <button onclick="setLEDColorBreathe(2)">Green</button>
+      <button onclick="setLEDColorBreathe(3)">Yellow</button>    
+      <button onclick="setLEDColorBreathe(4)">Blue</button>
+      <button onclick="setLEDColorBreathe(5)">Purple</button>
+      <button onclick="setLEDColorBreathe(6)">Cyan</button>    
+      <button onclick="setLEDColorBreathe(7)">White</button>
+  </p>
+
+  <script src="index.js"></script>
 </body>
+</html>
