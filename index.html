@@ -6,17 +6,20 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-  <h1 style="color:salmon">Hello, IoT Makers. Thingy Motion Service</h1>
- 
-  <button onclick="connect();">Connect LED</button> 
-  <input type="color" id="color"
-    oninput="changeLEDColorConstant(this.value)"> </input> 
+  <h1 style="color:chocolate; font-weight: bold">Hello, Musung and Gileun. Let's play~</h1>
   <p>
+    <button onclick="connectLed();">Connect LED</button> 
+    <input type="color" id="color"
+        oninput="changeLEDColorConstant(this.value)"> </input> 
+    <text id="ledBattery"> Bat Level</text>     
+  <p>
+      <text> Constant </text> <br>
       <button onclick="setLEDColorConstant(255, 0, 0)">Red</button>
       <button onclick="setLEDColorConstant(0, 255, 0)">Green</button>
       <button onclick="setLEDColorConstant(0, 0, 255)">Blue</button>    
   </p>
   <p>
+      <text> Breathe   </text> <br>
       <button onclick="setLEDColorBreathe(1)">Red</button>
       <button onclick="setLEDColorBreathe(2)">Green</button>
       <button onclick="setLEDColorBreathe(3)">Yellow</button>    
@@ -25,15 +28,19 @@
       <button onclick="setLEDColorBreathe(6)">Cyan</button>    
       <button onclick="setLEDColorBreathe(7)">White</button>
   </p>
+  <br><br>
   <p>
     <button onclick="connectThingy();">Connect Motion</button> 
-    <button onclick="startGame();">Play</button> 
+    <button onclick="startGame();"> Play Shake Game </button> 
+    <text id="motionBattery"> Bat Level</text>     
     <div class="w3-container">
-        <h2>Dynamic Progress Bar</h2>
+        <h3 id="gameTitle"  style='color:black; font-weight: bold; font-size: 20px;'>Click button to start game</h3>
+        <h3 id="gameSeconds"  style='color:blue; font-weight: bold; font-size: 60px;'>10</h3>
         <div class="w3-light-grey">
             <div id="myBar" class="w3-green" style="height:24px;width:10%"></div>
         </div>
     </div>
+
   </p>
 
   <script src="index.js"></script>
