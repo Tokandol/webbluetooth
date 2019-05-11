@@ -8,20 +8,57 @@ const ThingyMotionDataCharacteristic = 'ef680406-9b35-4933-9b10-52ffa9740042';
 const controlsElement = document.querySelector('#controls');
 
 let ledCharacteristic = null;
+// let ledCharacteristicBat = null;
+let motionCharacteristic = null;
 let powerCounter = 0;
 const powerBar = document.getElementById("myBar");  
+const ledBatteryLevel = document.getElementById("ledBattery");  
+const motionBatteryLevel = document.getElementById("motionBattery");  
+
 
 let gameStartedFlag = false;
 // let slider = document.getElementById("myIntensity");
 // let output = document.getElementById("demo");
 // output.innerHTML = slider.value; // Display the default slider value
 
-async function connect() {
+// function onButtonBattery() {
+//     log('Requesting Bluetooth Device...');
+//     navigator.bluetooth.requestDevice(
+//       {filters: [{services: ['battery_service']}]})
+//     .then(device => {
+//       log('Connecting to GATT Server...');
+//       return device.gatt.connect();
+//     })
+//     .then(server => {
+//       log('Getting Battery Service...');
+//       return server.getPrimaryService('battery_service');
+//     })
+//     .then(service => {
+//       log('Getting Battery Level Characteristic...');
+//       return service.getCharacteristic('battery_level');
+//     })
+//     .then(characteristic => {
+//       log('Reading Battery Level...');
+//       return characteristic.readValue();
+//     })
+//     .then(value => {
+//       let batteryLevel = value.getUint8(0);
+//       log('> Battery Level is ' + batteryLevel + '%');
+//     })
+//     .catch(error => {
+//       log('Argh! ' + error);
+//     });
+//   }
+
+async function connectLed() {
   try {
       const device = await navigator.bluetooth.requestDevice({
-          // filters:[{name: 'ThingyE5'}]
+          filters:[
+              {namePrefix: 'Thingy'},
+              {services: ['battery_service']},
+            ],
           // filters: [...] <- Prefer filters to save energy & show relevant devices.
-          acceptAllDevices: true,
+        //   acceptAllDevices: true,
           optionalServices: [ThingyUserInterfaceService]  
       });
   
@@ -32,6 +69,13 @@ async function connect() {
       const service = await device.gatt.getPrimaryService(ThingyUserInterfaceService);
       console.log(service);
       ledCharacteristic = await service.getCharacteristic(ThingyLEDCharacteristic);
+      const serviceBat = await device.gatt.getPrimaryService('battery_service');
+      console.log(serviceBat);
+      const ledCharacteristicBat = await serviceBat.getCharacteristic('battery_level');
+      const value = await ledCharacteristicBat.readValue();
+      console.log(value);
+      ledBatteryLevel.innerHTML =  ' ' + value.getUint8(0) + '%';
+
   } catch(error) {
       console.log('Argh!' + error);
   }
@@ -39,9 +83,11 @@ async function connect() {
 async function connectThingy() {
     try {
         const device = await navigator.bluetooth.requestDevice({
-            // filters:[{name: 'ThingyE5'}]
-            // filters: [...] <- Prefer filters to save energy & show relevant devices.
-            acceptAllDevices: true,
+            filters:[
+                {namePrefix: 'Thingy'},
+                {services: ['battery_service']},
+              ],            
+            // acceptAllDevices: true,
             optionalServices:  [ThingyMotionService]  
         });
     
@@ -50,9 +96,8 @@ async function connectThingy() {
         console.log('Getting Services...');
         const service = await device.gatt.getPrimaryService(ThingyMotionService);
         console.log(service);
-        const motionCharacteristic = await service.getCharacteristic(ThingyMotionDataCharacteristic);
+        motionCharacteristic = await service.getCharacteristic(ThingyMotionDataCharacteristic);
         // char.writeValue(new Uint8Array([]));
-        
         motionCharacteristic.addEventListener('characteristicvaluechanged', () => {
             const {value} = motionCharacteristic;
             const accelX = value.getInt16(0, true) / 1000.0;
@@ -68,6 +113,15 @@ async function connectThingy() {
             }            
         });
         await motionCharacteristic.startNotifications();
+
+        const serviceBat = await device.gatt.getPrimaryService('battery_service');
+        console.log(serviceBat);
+        motionCharacteristicBat = await serviceBat.getCharacteristic('battery_level');
+        const value = await motionCharacteristicBat.readValue();
+        console.log(value);
+        motionBatteryLevel.innerHTML =  ' ' + value.getUint8(0) + '%';
+  
+
     } catch(error) {
         console.log('Argh!' + error);
     }
@@ -111,16 +165,21 @@ async function setLEDColorBreathe(color) {
 function startGame() {
     powerCounter = 0;
     let seconds = 0;
-    gameStartedFlag = true;
-    console.log('Game started~');
-    const timer = setInterval(() => {
-        if(seconds == 10) {
-            document.querySelector('h1').innerText = 'Score: ' + powerCounter.toFixed(2);
-            clearInterval(timer);
-            gameStartedFlag = false;
-            return;
-        }
-        seconds++;
-        console.log('Time left:  %c' + (10 - seconds), 'color:red; font-weight: bold; font-size: 50px;');
-    }, 1000);
+    if(motionCharacteristic) {
+        gameStartedFlag = true;
+        console.log('Game started~');
+        const timer = setInterval(() => {
+            if(seconds == 10) {
+                // document.querySelector('h1').innerText = 'Score: ' + powerCounter.toFixed(2);
+                gameSeconds.innerText = 'Score: ' + powerCounter.toFixed(0);
+                clearInterval(timer);
+                gameStartedFlag = false;
+                return;
+            }
+            seconds++;
+            console.log('Time left:  %c' + (10 - seconds), 'color:red; font-weight: bold; font-size: 50px;');
+            gameSeconds.innerHTML =  10 - seconds;
+        }, 1000);
+    }   
 }
+
